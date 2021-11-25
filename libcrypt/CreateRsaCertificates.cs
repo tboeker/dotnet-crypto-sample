@@ -1,27 +1,15 @@
-﻿using CertificateManager;
-using CertificateManager.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
+using CertificateManager;
+using CertificateManager.Models;
 
-namespace EncryptDecryptLib
+namespace libcrypt
 {
     public static class CreateRsaCertificates
     {
-        public static X509Certificate2 LoadRsaCertficate(string pfxFile, string pwdFile)
-        {
-            var pwd = File.ReadAllText(pwdFile);
-            var bytes = File.ReadAllBytes(pfxFile);
-            
-            var col = new X509Certificate2Collection();
-            col.Import(bytes, pwd);
-            return col[0];
-        }
-        
-        
         public static X509Certificate2 CreateRsaCertificate(CreateCertificates createCertificates, int keySize,
             string name)
         {
@@ -36,7 +24,7 @@ namespace EncryptDecryptLib
             {
                 DnsName = new List<string>
                 {
-                    name,
+                    name
                 }
             };
 
@@ -77,6 +65,16 @@ namespace EncryptDecryptLib
                 });
 
             return certificate;
+        }
+
+        public static X509Certificate2 LoadRsaCertficate(string pfxFile, string pwdFile)
+        {
+            var pwd = File.ReadAllText(pwdFile);
+            var bytes = File.ReadAllBytes(pfxFile);
+
+            var col = new X509Certificate2Collection();
+            col.Import(bytes, pwd);
+            return col[0];
         }
     }
 }

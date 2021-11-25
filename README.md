@@ -6,10 +6,16 @@ Demo der Asymmetrischen Verschlüsselung.
 
 ```
 # create certificate
-dotnet run --project create-cert
+dotnet run --project createcert
 
 # create demo data
-dotnet run --project demo-data
+dotnet run --project createdata
+
+# encrypt data
+dotnet run --project encrypt
+
+# decrypt data
+dotnet run --project decrypt
 ```
 
 # Prinzip

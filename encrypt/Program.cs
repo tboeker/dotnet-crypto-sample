@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Linq;
 using System.Text.Json;
-using CryptLib;
-using EncryptDecryptLib;
-using lib;
+using libcrypt;
+using libdata;
 
-namespace encrypt_data
+namespace encrypt
 {
-    internal class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             const string pfxFile = "cert.pfx";
             const string pwdFile = "cert.txt";
 
             const string rawDataFile = "data-raw.json";
+            const string encryptedDataFile = "data-encrypted.json";
 
             var rawItems = DataUtil.ReadJson(rawDataFile);
 
@@ -26,17 +26,20 @@ namespace encrypt_data
 
             var encryptedItems = rawItems.Select(x =>
             {
-                var enc = new DataItemToEncrypt
-                {
-                    Name1 = x.Name1,
-                    Name2 = x.Name2
-                };
+                if (x.IsEncrypted == 1)
+                    return x;
 
+                var enc = x.GetDataToEncrypt();
                 var json = JsonSerializer.Serialize(enc);
-                //  var encryptedText = asymmetricEncryptDecrypt.Encrypt(text, Utils.CreateRsaPublicKey(cert));
+
+                // TODO
+                var encryptedText = asymmetricEncryptDecrypt.Encrypt(json, Utils.CreateRsaPublicKey(cert));
+                x.SetEncryptedData(encryptedText);
 
                 return x;
             });
+
+            DataUtil.WriteJson(encryptedItems, encryptedDataFile);
         }
     }
 }

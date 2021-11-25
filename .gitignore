@@ -1,6 +1,7 @@
 .idea
+.vs
 bin
 obj
 cert.*
-data*.*
+data*.json
 *.pfx

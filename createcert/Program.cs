@@ -1,18 +1,14 @@
-﻿using CertificateManager;
-using CertificateManager.Models;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using EncryptDecryptLib;
+using CertificateManager;
+using libcrypt;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace CreateCert
+namespace createcert
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             const string name = "SigningCertificateTest";
             const string friendlyName = "tb demo certificate";
@@ -20,36 +16,33 @@ namespace CreateCert
             const string pfxFile = "cert.pfx";
             const string pemFile = "pem.pfx";
             const string pwdFile = "cert.txt";
-            
+
             // see https://github.com/damienbod/SendingEncryptedData/blob/main/ConsoleAsymmetricEncryption/Program.cs
 
             var serviceProvider = new ServiceCollection()
                 .AddCertificateManager()
                 .BuildServiceProvider();
 
-            var cc = serviceProvider.GetService<CreateCertificates>();
-            
+            var cc = serviceProvider.GetRequiredService<CreateCertificates>();
+
             var cert = CreateRsaCertificates.CreateRsaCertificate(cc, 3072, name);
             cert.FriendlyName = friendlyName;
 
             Console.WriteLine($"Created certificate: {cert.FriendlyName}");
 
-            var iec = serviceProvider.GetService<ImportExportCertificate>();
+            var iec = serviceProvider.GetRequiredService<ImportExportCertificate>();
 
             var certInPfxBtyes = iec.ExportSelfSignedCertificatePfx(password, cert);
-            
+
             File.WriteAllBytes(pfxFile, certInPfxBtyes);
             Console.WriteLine($"Pfx file: {pfxFile}");
 
-            var certInPEMBtyes = iec.PemExportPfxFullCertificate(cert);
-            File.WriteAllText(pemFile, certInPEMBtyes);
-            Console.WriteLine($"Pem file: {pemFile}");            
+            var certInPemBytes = iec.PemExportPfxFullCertificate(cert);
+            File.WriteAllText(pemFile, certInPemBytes);
+            Console.WriteLine($"Pem file: {pemFile}");
 
             File.WriteAllText(pwdFile, password);
-            Console.WriteLine($"Password file: {pwdFile}");       
+            Console.WriteLine($"Password file: {pwdFile}");
         }
-
-
-       
     }
 }
